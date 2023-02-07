@@ -120,16 +120,31 @@ def main():
                                           min(best[0][1])))
 
 
-if __name__ == '__main__':
-    main()
+def extract_globals(ref):
+    _globals = []
+    for idx in range(len(ref)):
+        uncalled = 0
+        for line in ref:
+            if line[idx] != 0:
+                continue
+            uncalled += 1
+        if uncalled == len(ref):
+            _globals.append(idx)
+    return _globals
 
-    # filename = input('Enter the filename: ')
+
+if __name__ == '__main__':
+    # main()
+
+    filename = input('Enter the filename: ')
     # _cop = input('Enter crossover method (cpx, onepx): ')
     # _intx = input('Enter the int crossover method (onepx, exchange): ')
-    # with open('../mdgs/{}.mdg'.format(filename), 'r') as f:
-    #     data = f.readlines()
-    # nodes = get_nodes(data)
-    # ref = create_table(data)
+    with open('../mdgs/{}.mdg'.format(filename), 'r') as f:
+        data = f.readlines()
+    nodes = get_nodes(data)
+    ref = create_table(data)
+    print(extract_globals(ref))
+
     # pop_size = get_pop_size(nodes)
     # cp = get_cp(nodes)
     # mp = get_mp(nodes)
