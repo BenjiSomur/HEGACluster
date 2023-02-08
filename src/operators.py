@@ -72,10 +72,21 @@ def dominance_sort(pop):
 def tournament(pop, pop_size):
     for _ in range(pop_size):
         opts = rnd.sample(list(range(pop_size)), 2)
-        if pop[opts[0]][1] > pop[opts[1]][1]:
+        if pop[opts[0]][1][0] > pop[opts[1]][1][0]:
             yield opts[0]
         else:
             yield opts[1]
+
+
+def stoch_tourn(pop, pop_size, prt, smpl):
+    for _ in range(pop_size):
+        opts = rnd.sample(list(range(pop_size)), smpl)
+        opts.sort(key=lambda x: pop[x][1][0])
+        if rnd.uniform(0, 1) <= prt:
+            yield opts[-1]
+        else:
+            _id = rnd.randrange(0, len(opts))
+            yield opts[_id]
 
 
 def repair_int(int_part, ref):
@@ -281,7 +292,7 @@ def aux_1px(sub1, sub2):
     b_aux2 = sub2[:p_cros]
     b_aux1 = ''.join([b_aux1, sub2[p_cros:]])
     b_aux2 = ''.join([b_aux2, sub1[p_cros:]])
-    return[b_aux1, b_aux2]
+    return [b_aux1, b_aux2]
 
 
 def mx(parents, ref, int_type, pc):

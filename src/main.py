@@ -2,13 +2,14 @@ from operator import itemgetter
 from parser import get_nodes, create_table
 from initializer import *
 from file_manager import write_headers, write_gen, write_csv
-from operators import init_population, tournament, crossover, mutation, dominance_sort
+from operators import init_population, tournament, crossover, mutation, dominance_sort, stoch_tourn
 from fitness import fitness
 from decoder import decode
 from graph_maker import create_graph
 import sys
 import os
 import timeit
+import pandas as pd
 
 
 def main():
@@ -42,8 +43,6 @@ def main():
         ft = fitness(chrom, ref, _theta)
         _pop.append([chrom, ft])
     del raw_pop
-    # _pop.sort(key=lambda x: (x[1][1], -x[1][0]))
-    # best = _pop[-1]
     _pop = dominance_sort(_pop)
     best = _pop[0]
     print(best)
@@ -61,6 +60,7 @@ def main():
     write_gen(_kwargs)
     write_csv(_kwargs)
     while no_gen < gens:
+        # parents = list(stoch_tourn(_pop, pop_size, 0.8, 4))
         parents = list(tournament(_pop, pop_size))
         offsp = list()
         for i in range(0, len(parents), 2):
@@ -77,12 +77,8 @@ def main():
         del _pop
         _pop = aux
         del aux
-        # _pop.sort(key=lambda x: (x[1][1], -x[1][0]))
-        # while len(_pop) < pop_size:
-        #     _pop.pop(0)
-        # best = _pop[-1]
         _pop = dominance_sort(_pop)
-        while len(_pop) < pop_size:
+        while len(_pop) > pop_size:
             _pop.pop(-1)
         best = _pop[0]
         print("{}: ".format(no_gen + 1), best)
@@ -98,15 +94,34 @@ def main():
         write_gen(_kwargs)
         write_csv(_kwargs)
 
-    _kwargs = {'filename': filename,
-               'type': _cop,
-               'it_no': it_no,
-               'chrom': best[0],
-               'nodes': nodes,
-               'raw_data': data,
-               'intx': _intx
-               }
-    create_graph(_kwargs)
+    mqs = []
+    noclusts = []
+    maxclusts = []
+    minclusts = []
+    for p in _pop:
+        mqs.append(p[1][1])
+        noclusts.append(len(p[0][1]))
+        maxclusts.append(max(p[0][1]))
+        minclusts.append(min(p[0][1]))
+    results = pd.DataFrame(list(zip(mqs, noclusts, maxclusts, minclusts)), columns=[
+                           'mq', 'No. Clus', 'Max clus', 'Min clus'])
+
+    try:
+        os.makedirs(f'./{filename}/{_cop}/{_intx}/{it_no}/final_population')
+    except IOError:
+        raise
+
+    for idx, p in enumerate(_pop):
+        _kwargs = {'filename': filename,
+                   'type': _cop,
+                   'it_no': it_no,
+                   'pop_ord': idx,
+                   'chrom': p[0],
+                   'nodes': nodes,
+                   'raw_data': data,
+                   'intx': _intx
+                   }
+        create_graph(_kwargs)
 
     _path = f'./{filename}/{_cop}/{_intx}'
     if not os.path.exists('{}/bests.csv'.format(_path)):
@@ -118,32 +133,23 @@ def main():
                                           len(best[0][1]),
                                           max(best[0][1]),
                                           min(best[0][1])))
-
-
-def extract_globals(ref):
-    _globals = []
-    for idx in range(len(ref)):
-        uncalled = 0
-        for line in ref:
-            if line[idx] != 0:
-                continue
-            uncalled += 1
-        if uncalled == len(ref):
-            _globals.append(idx)
-    return _globals
+    results.to_csv('{}/{}/pop_results.csv'.format(_path, it_no))
+    with open('{}/{}/final_population.txt'.format(_path, it_no), 'w') as f:
+        for idx, p in enumerate(_pop):
+            sol = decode(p[0], len(nodes))
+            f.write('{}: {}\n'.format(idx, sol))
 
 
 if __name__ == '__main__':
-    # main()
+    main()
 
-    filename = input('Enter the filename: ')
+    # filename = input('Enter the filename: ')
     # _cop = input('Enter crossover method (cpx, onepx): ')
     # _intx = input('Enter the int crossover method (onepx, exchange): ')
-    with open('../mdgs/{}.mdg'.format(filename), 'r') as f:
-        data = f.readlines()
-    nodes = get_nodes(data)
-    ref = create_table(data)
-    print(extract_globals(ref))
+    # with open('../mdgs/{}.mdg'.format(filename), 'r') as f:
+    #     data = f.readlines()
+    # nodes = get_nodes(data)
+    # ref = create_table(data)
 
     # pop_size = get_pop_size(nodes)
     # cp = get_cp(nodes)

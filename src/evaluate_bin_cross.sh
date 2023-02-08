@@ -1,11 +1,11 @@
 # !/bin/bash
 read -p "Enter the name of the system: " filename
 read -p "Enter the binary crossover: " bincross
-# read -p "Enter the theta value: " theta
 
 declare -a IntCrossoverArray=("px1" "exchange")
 
 eval "$(conda shell.bash hook)"
+source ~/anaconda3/etc/profile.d/conda.sh
 conda activate general
 
 for ix in ${IntCrossoverArray[@]}; do

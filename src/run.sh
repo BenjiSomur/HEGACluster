@@ -5,6 +5,7 @@ read -p "Enter the theta value: " theta
 # read -p "Enter the int crossover method: " intx
 declare -a BinCrossoverArray=("cpx" "onepx")
 declare -a IntCrossoverArray=("px1" "exchange")
+
 eval "$(conda shell.bash hook)"
 conda activate general
 

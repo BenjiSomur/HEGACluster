@@ -36,7 +36,7 @@ def get_clus(_ref, _chrom):
             return x
 
 
-def turbomq2(_chrom, _ref):
+def turbomq(_chrom, _ref, _gbls=list()):
     alpha = [0]*len(_chrom)
     beta = [0]*len(_chrom)
     for _idx, _clust in enumerate(_chrom):
@@ -49,24 +49,16 @@ def turbomq2(_chrom, _ref):
                     alpha[_idx] += val
                 else:
                     id_clusj = get_clus(_idj_aux, _chrom)
-                    beta[_idx] += val
                     beta[id_clusj] += val
+                    beta[_idx] += val
+
     _sum = 0
     for x in range(len(_chrom)):
-        _sum += alpha[x]/(alpha[x] + (beta[x]/2))
-        #_sum += (2*alpha[x])/((2*alpha[x]) + beta[x])
-    return _sum
-
-
-def turbomq(_chrom, _ref):
-    _sum = 0
-    for _clust in _chrom:
-        _mu = calc_intraedges(_clust, _ref)
-        if _mu == 0:
-            continue
-        _eps = calc_interedges(_clust, _chrom, _ref)
-        _mf = _mu / (_mu + (_eps / 2))
-        _sum += _mf
+        try:
+            _sum += alpha[x]/(alpha[x] + (beta[x]/2))
+        except ZeroDivisionError:
+            print(*[x, _chrom, alpha, beta], sep='\n')
+            raise
     return _sum
 
 
@@ -88,39 +80,16 @@ def get_clusmin(_chrom):
     return size
 
 
-def fitness3(_indiv, _ref, _theta):
-    _chrom = decode(_indiv, len(_ref))
-    tmq = turbomq(_chrom, _ref)
-    nc = len(_chrom) / len(_ref)
-    _deltaclus = (max(_indiv[1]) - min(_indiv[1])) / len(_ref)
-    return [(tmq * _theta) + (((1-_theta)/2) * (nc - _deltaclus)), tmq]
-
-
 def fitness(_indiv, _ref, _theta):
     _chrom = decode(_indiv, len(_ref))
-    tmq = turbomq2(_chrom, _ref)
+    tmq = turbomq(_chrom, _ref)
     nc = len(_chrom) / len(_ref)
     _deltaclus = (max(_indiv[1]) - min(_indiv[1])) / len(_ref)
     return [(tmq * _theta) + (((1-_theta)/2) * (nc + (1-_deltaclus))), tmq]
 
 
-def fitness4(_indiv, _ref, _theta):
-    _chrom = decode(_indiv, len(_ref))
-    tmq = turbomq(_chrom, _ref)
-    nc = len(_chrom) / len(_ref)
-    _deltaclus = (max(_indiv[1]) - min(_indiv[1])) / len(_ref)
-    return [(tmq * _theta) + (nc * ((1 - _theta)/2)) + ((1 - _deltaclus)*((1-_theta)/2)), tmq]
-
-
-def fitness2(_chrom, _ref, _theta):
-    tmq = turbomq(_chrom, _ref)
-    nc = len(_chrom) / len(_ref)
-    _deltaclus = (get_clusmax(_chrom) - get_clusmin(_chrom)) / len(_ref)
-    return [(tmq * _theta) + (nc * ((1 - _theta)/2)) + ((1 - _deltaclus)*((1-_theta)/2)), tmq]
-
-
-def fitness5(_chrom, _ref, _theta):
-    tmq = turbomq2(_chrom, _ref)
+def fitness5(_chrom, _ref, _theta, _gbls=list()):
+    tmq = turbomq(_chrom, _ref, _gbls)
     nc = len(_chrom) / len(_ref)
     _deltaclus = (get_clusmax(_chrom) - get_clusmin(_chrom)) / len(_ref)
     return [(tmq * _theta) + (((1-_theta)/2) * (nc + (1-_deltaclus))), tmq]
