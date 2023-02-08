@@ -69,17 +69,30 @@ def main():
             chld1 = mutation(gen_chld[0], mp)
             chld2 = mutation(gen_chld[1], mp)
             offsp += [chld1, chld2]
-        aux = []
+        aux = list()
         for chrom in offsp:
             ft = fitness(chrom, ref, _theta)
             aux.append([chrom, ft])
-        aux.append(best)
+
+        _aux = dominance_sort(aux)
+        _aux.pop(-1)
+        for auxid in range(pop_size - 1):
+            if best[1][1] > _aux[auxid][1][1]:
+                _aux.insert(auxid, best[:])
+                break
+        if len(_aux) < pop_size:
+            _aux.append(best[:])
         del _pop
-        _pop = aux
-        del aux
-        _pop = dominance_sort(_pop)
-        while len(_pop) > pop_size:
-            _pop.pop(-1)
+        _pop = _aux[:]
+        del best
+        del _aux
+        # aux.append(best)
+        # del _pop
+        # _pop = aux
+        # del aux
+        # _pop = dominance_sort(_pop)
+        # while len(_pop) > pop_size:
+        #     _pop.pop(-1)
         best = _pop[0]
         print("{}: ".format(no_gen + 1), best)
         no_gen += 1
