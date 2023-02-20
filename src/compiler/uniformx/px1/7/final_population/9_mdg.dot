@@ -1,6 +1,5 @@
 digraph G {
-size = "10,10";
-rotate = 90;
+size = "20,20";
 subgraph cluster0 {
 label = "CL:parser";
 color = black;
