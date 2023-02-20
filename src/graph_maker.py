@@ -27,8 +27,7 @@ def write_relations(filepath, raw_data):
 def write_graph_header(filepath):
     with open(filepath, 'w') as f:
         f.write('digraph G {\n')
-        f.write('size = "10,10";\n')
-        f.write('rotate = 90;\n')
+        f.write('size = "20,20";\n')
 
 
 def create_graph(kwargs):
