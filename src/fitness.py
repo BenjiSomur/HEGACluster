@@ -36,7 +36,7 @@ def get_clus(_ref, _chrom):
             return x
 
 
-def turbomq(_chrom, _ref, _gbls=list()):
+def turbomq(_chrom, _ref):
     alpha = [0]*len(_chrom)
     beta = [0]*len(_chrom)
     for _idx, _clust in enumerate(_chrom):
@@ -88,8 +88,8 @@ def fitness(_indiv, _ref, _theta):
     return [(tmq * _theta) + (((1-_theta)/2) * (nc + (1-_deltaclus))), tmq]
 
 
-def fitness5(_chrom, _ref, _theta, _gbls=list()):
-    tmq = turbomq(_chrom, _ref, _gbls)
+def fitness5(_chrom, _ref, _theta):
+    tmq = turbomq(_chrom, _ref)
     nc = len(_chrom) / len(_ref)
     _deltaclus = (get_clusmax(_chrom) - get_clusmin(_chrom)) / len(_ref)
     return [(tmq * _theta) + (((1-_theta)/2) * (nc + (1-_deltaclus))), tmq]
@@ -98,9 +98,8 @@ def fitness5(_chrom, _ref, _theta, _gbls=list()):
 if __name__ == '__main__':
     _streval = 'from parser import create_table'
     exec(_streval)
-    with open('../mdgs/rcs.mdg', 'r') as f:
+    with open('../mdgs/compiler.mdg', 'r') as f:
         data = f.readlines()
     ref = create_table(data)
-    chrom = [[14, 29], [21, 26, 27], [5, 20, 25], [9, 13], [23, 24, 28], [
-        1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 15, 16, 17, 18, 19, 22]]
+    chrom = [[1, 3, 5], [2, 7, 12, 13], [4, 10], [6, 8, 11], [9]]
     print(fitness5(chrom, ref, 0.65))
