@@ -154,10 +154,22 @@ def px1_i(p1, p2):
 
 
 def exchange_i(p1, p2):
-    np1 = p2[:]
-    np2 = p1[:]
+    np1 = [x for x in p2]
+    np2 = [y for y in p1]
 
     return np1, np2
+
+
+def inverse_i(p1, p2):
+    pos1 = rnd.randint(1, len(p1)-1)
+    pos2 = rnd.randint(1, len(p2)-1)
+    np1 = p1[:pos1]
+    np2 = p2[:pos2]
+    np1.reverse()
+    np2.reverse()
+    np1.extend(p1[pos1:])
+    np2.extend(p2[pos2:])
+    return np2, np1
 
 
 def cpx(parents, ref, int_type):
@@ -350,6 +362,28 @@ def crossover(parents, ref, cp, _cop, int_type):
         offsp = mx(parents, ref, int_type, cp)
 
     return offsp
+
+
+# def getnonbins(intpart):
+#     positions = []
+#     for x, val in enumerate(intpart):
+#         if val > 2:
+#             positions.append(x)
+#     return positions
+
+
+# def mutation(chrom, mp):
+#     if rnd.uniform(0, 1) > mp:
+#         return chrom[:]
+#     nonbins = getnonbins(chrom[1])
+#     if len(nonbins) < 2:
+#         return chrom[:]
+#     pos1, pos2 = rnd.sample(nonbins, 2)
+#     b_aux = chrom[0][:]
+#     a_aux = [x for x in chrom[1]]
+#     a_aux[pos1] -= 1
+#     a_aux[pos2] += 1
+#     return [b_aux, a_aux]
 
 
 def mutation(chrom, mp):
