@@ -1,7 +1,7 @@
 # !/bin/bash
 read -p "Enter the name of the system: " filename
 declare -a BinCrossoverArray=("cpx" "onepx" "uniformx" "rrx" "mx")
-declare -a IntCrossoverArray=("px1" "exchange")
+declare -a IntCrossoverArray=("px1" "exchange" "inverse")
 
 eval "$(conda shell.bash hook)"
 source ~/anaconda3/etc/profile.d/conda.sh

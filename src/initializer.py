@@ -1,31 +1,34 @@
 import math
 
 
-# def get_theta(nodes):
-#     n = len(nodes)
-#     if n >= 10000:
-#         return 0.9
-#     else:
-#         return 1 - (1 / math.sqrt(n))
-
 def get_theta(nodes):
     n = len(nodes)
     if n >= 10000:
         return 0.9
     else:
-        return 1 - ((1 / math.log2(n))**2)
+        return 1 - (1 / math.sqrt(n))
+
+# def get_theta(nodes):
+#     n = len(nodes)
+#     if n >= 10000:
+#         return 0.9
+#     else:
+#         return 1 - ((1 / math.log2(n))**2)
 
 
 def get_pop_size(nodes):
     n = len(nodes)
     if n <= 30:
-        return 2*n
+        return 2*(n+1)
     elif n <= 100:
-        return n
+        if n % 2 == 0:
+            return n
+        else:
+            return n+1
     elif n <= 500:
-        return n / 2
+        return n // 2
     elif n > 500:
-        return n / 4
+        return n // 4
     else:
         return None
 
@@ -35,9 +38,9 @@ def get_no_gen(nodes):
     if n <= 30:
         return 50 * n
     elif n <= 3000:
-        return 20 * n
+        return 25 * n
     elif n <= 10000:
-        return 5 * n
+        return 10 * n
     elif n > 10000:
         return n
     else:
