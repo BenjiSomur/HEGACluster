@@ -44,7 +44,7 @@ def main():
         _pop.append([chrom, ft])
     del raw_pop
     _pop = dominance_sort(_pop)
-    best = _pop[0]
+    best = list(_pop[0])
     print(best)
     no_gen = 0
     _kwargs = {'filename': filename,
@@ -78,22 +78,15 @@ def main():
         _aux.pop(-1)
         for auxid in range(pop_size - 1):
             if best[1][1] > _aux[auxid][1][1]:
-                _aux.insert(auxid, best[:])
+                _aux.insert(auxid, best)
                 break
         if len(_aux) < pop_size:
-            _aux.append(best[:])
+            _aux.append(best)
         del _pop
-        _pop = _aux[:]
+        _pop = list(_aux)
         del best
         del _aux
-        # aux.append(best)
-        # del _pop
-        # _pop = aux
-        # del aux
-        # _pop = dominance_sort(_pop)
-        # while len(_pop) > pop_size:
-        #     _pop.pop(-1)
-        best = _pop[0]
+        best = list(_pop[0])
         print("{}: ".format(no_gen + 1), best)
         no_gen += 1
         _kwargs = {'filename': filename,
@@ -155,60 +148,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-    # filename = input('Enter the filename: ')
-    # _cop = input('Enter crossover method (cpx, onepx): ')
-    # _intx = input('Enter the int crossover method (onepx, exchange): ')
-    # with open('../mdgs/{}.mdg'.format(filename), 'r') as f:
-    #     data = f.readlines()
-    # nodes = get_nodes(data)
-    # ref = create_table(data)
-
-    # pop_size = get_pop_size(nodes)
-    # cp = get_cp(nodes)
-    # mp = get_mp(nodes)
-    # _theta = get_theta(nodes)
-    # gens = get_no_gen(nodes)
-    # raw_pop = init_population(pop_size, len(nodes))
-    # _pop = []
-    # for chrom in raw_pop:
-    #     ft = fitness(chrom, ref, _theta)
-    #     _pop.append([chrom, ft])
-    # _pop = dominance_sort(_pop)
-    # print(_pop)
-
-    # test_str = """
-# raw_pop = init_population(pop_size, len(nodes))
-# _pop = []
-# for chrom in raw_pop:
-#     ft = fitness(chrom, ref, _theta)
-#     _pop.append([chrom, ft])
-# _pop.sort(key=lambda x: x[1][0])
-# best = _pop[-1]
-# parents = [x for x in tournament(_pop, pop_size)]
-# offsp = list()
-# for i in range(0, len(parents), 2):
-#     gen_chld = crossover([_pop[parents[i]][0], _pop[parents[i+1]][0]], len(nodes), cp, _cop, _intx)
-#     chld1 = mutation(gen_chld[0],mp)
-#     chld2 = mutation(gen_chld[1],mp)
-#     offsp += [chld1,chld2]
-# aux = []
-# for chrom in offsp:
-#     ft = fitness(chrom, ref, _theta)
-#     aux.append([chrom, ft])
-# aux.append(best)
-# del _pop
-# _pop = aux
-# _pop.sort(key=lambda x: x[1][0])
-# while len(_pop) < pop_size:
-#     _pop.pop(0)
-# """
-#     _setup = '''from operators import crossover, mutation, init_population, tournament; from fitness import fitness'''
-#     print(timeit.timeit(test_str, setup=_setup, number=1, globals={'pop_size': pop_size,
-#                                                                    'nodes': nodes,
-#                                                                    'cp': 1,
-#                                                                    '_cop': _cop,
-#                                                                    '_intx': _intx,
-#                                                                    'mp': mp,
-#                                                                    'ref': ref,
-#                                                                    '_theta': _theta}))

@@ -89,8 +89,17 @@ def stoch_tourn(pop, pop_size, prt, smpl):
             yield opts[_id]
 
 
+def rem_empty(int_part):
+    aux_part = []
+    for l in int_part:
+        if l == 0:
+            continue
+        aux_part.append(l)
+    return aux_part
+
+
 def repair_int(int_part, ref):
-    aux = int_part[:]
+    aux = list(int_part)
     max_pos = aux.index(max(aux))
     while sum(aux) > ref:
         if aux[max_pos] == 2:
@@ -99,13 +108,13 @@ def repair_int(int_part, ref):
             aux[pos] += 1
             max_pos = aux.index(max(aux))
         else:
-            aux[max_pos] -= 1
+            aux[max_pos] = aux[max_pos] - 1
     if sum(aux) < ref:
         aux.append(ref-sum(aux))
     if len(aux) <= 2:
-        aux.append(aux[aux.index(max(aux))] // 2)
-        aux[aux.index(max(aux))] = aux[aux.index(max(aux))] - aux[-1]
-    return aux
+        aux.append(aux[max_pos] // 2)
+        aux[max_pos] = aux[max_pos] - aux[-1]
+    return rem_empty(aux)
 
 
 def repair_bin(bin_part, ref):
@@ -154,9 +163,8 @@ def px1_i(p1, p2):
 
 
 def exchange_i(p1, p2):
-    np1 = [x for x in p2]
-    np2 = [y for y in p1]
-
+    np1 = list(p2)
+    np2 = list(p1)
     return np1, np2
 
 
@@ -344,8 +352,8 @@ def mx(parents, ref, int_type, pc):
 def crossover(parents, ref, cp, _cop, int_type):
     assert _cop in ['onepx', 'cpx', 'uniformx', 'rrx', 'mx']
     if rnd.uniform(0, 1) >= cp:
-        p1 = parents[0]
-        p2 = parents[1]
+        p1 = list(parents[0])
+        p2 = list(parents[1])
         return [p1, p2]
 
     offsp = None
@@ -358,7 +366,6 @@ def crossover(parents, ref, cp, _cop, int_type):
     elif _cop == 'rrx':
         offsp = rrx(parents, ref, int_type)
     elif _cop == 'mx':
-        pc = 0.65
         offsp = mx(parents, ref, int_type, cp)
 
     return offsp
@@ -388,7 +395,7 @@ def crossover(parents, ref, cp, _cop, int_type):
 
 def mutation(chrom, mp):
     if rnd.uniform(0, 1) > mp:
-        return chrom[:]
+        return list(chrom)
     pos1, pos2 = rnd.sample(list(range(len(chrom[1]))), 2)
     b_aux = chrom[0][:]
     a = chrom[1][pos1]
