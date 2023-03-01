@@ -371,36 +371,36 @@ def crossover(parents, ref, cp, _cop, int_type):
     return offsp
 
 
-# def getnonbins(intpart):
-#     positions = []
-#     for x, val in enumerate(intpart):
-#         if val > 2:
-#             positions.append(x)
-#     return positions
-
-
-# def mutation(chrom, mp):
-#     if rnd.uniform(0, 1) > mp:
-#         return chrom[:]
-#     nonbins = getnonbins(chrom[1])
-#     if len(nonbins) < 2:
-#         return chrom[:]
-#     pos1, pos2 = rnd.sample(nonbins, 2)
-#     b_aux = chrom[0][:]
-#     a_aux = [x for x in chrom[1]]
-#     a_aux[pos1] -= 1
-#     a_aux[pos2] += 1
-#     return [b_aux, a_aux]
+def getnonbins(intpart):
+    positions = []
+    for x, val in enumerate(intpart):
+        if val > 2:
+            positions.append(x)
+    return positions
 
 
 def mutation(chrom, mp):
     if rnd.uniform(0, 1) > mp:
         return list(chrom)
-    pos1, pos2 = rnd.sample(list(range(len(chrom[1]))), 2)
+    nonbins = getnonbins(chrom[1])
+    if len(nonbins) < 2:
+        return list(chrom)
+    pos1, pos2 = rnd.sample(nonbins, 2)
     b_aux = chrom[0][:]
-    a = chrom[1][pos1]
-    b = chrom[1][pos2]
-    aux = [x for x in chrom[1]]
-    aux[pos1] = b
-    aux[pos2] = a
-    return [b_aux, aux]
+    a_aux = [x for x in chrom[1]]
+    a_aux[pos1] -= 1
+    a_aux[pos2] += 1
+    return [b_aux, a_aux]
+
+
+# def mutation(chrom, mp):
+#     if rnd.uniform(0, 1) > mp:
+#         return list(chrom)
+#     pos1, pos2 = rnd.sample(list(range(len(chrom[1]))), 2)
+#     b_aux = chrom[0][:]
+#     a = chrom[1][pos1]
+#     b = chrom[1][pos2]
+#     aux = [x for x in chrom[1]]
+#     aux[pos1] = b
+#     aux[pos2] = a
+#     return [b_aux, aux]

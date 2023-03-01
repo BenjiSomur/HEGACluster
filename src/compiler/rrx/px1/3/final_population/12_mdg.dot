@@ -1,0 +1,73 @@
+digraph G {
+size = "20,20";
+subgraph cluster0 {
+label = "CL:typeStack";
+color = black;
+style = bold;
+"typeStack"[label="typeStack",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"dictionary"[label="dictionary",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"typeChecker"[label="typeChecker",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+}
+subgraph cluster1 {
+label = "CL:parser";
+color = black;
+style = bold;
+"parser"[label="parser",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"main"[label="main",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+}
+subgraph cluster2 {
+label = "CL:scanner";
+color = black;
+style = bold;
+"scanner"[label="scanner",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"declarations"[label="declarations",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"codeGenerator"[label="codeGenerator",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"addrStack"[label="addrStack",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"scopeController"[label="scopeController",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+}
+subgraph cluster3 {
+label = "CL:dictIdxStack";
+color = black;
+style = bold;
+"dictIdxStack"[label="dictIdxStack",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+}
+subgraph cluster4 {
+label = "CL:dictStack";
+color = black;
+style = bold;
+"dictStack"[label="dictStack",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"argCntStack"[label="argCntStack",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+}
+"main" -> "declarations"[color=blue,font=6];
+"main" -> "parser"[color=blue,font=6];
+"main" -> "codeGenerator"[color=blue,font=6];
+"parser" -> "declarations"[color=blue,font=6];
+"parser" -> "scanner"[color=blue,font=6];
+"parser" -> "scopeController"[color=blue,font=6];
+"parser" -> "typeChecker"[color=blue,font=6];
+"parser" -> "codeGenerator"[color=blue,font=6];
+"codeGenerator" -> "declarations"[color=blue,font=6];
+"codeGenerator" -> "dictionary"[color=blue,font=6];
+"codeGenerator" -> "dictIdxStack"[color=blue,font=6];
+"codeGenerator" -> "scopeController"[color=blue,font=6];
+"codeGenerator" -> "addrStack"[color=blue,font=6];
+"scanner" -> "declarations"[color=blue,font=6];
+"scopeController" -> "declarations"[color=blue,font=6];
+"scopeController" -> "dictionary"[color=blue,font=6];
+"scopeController" -> "dictIdxStack"[color=blue,font=6];
+"scopeController" -> "dictStack"[color=blue,font=6];
+"typeChecker" -> "declarations"[color=blue,font=6];
+"typeChecker" -> "dictStack"[color=blue,font=6];
+"typeChecker" -> "dictionary"[color=blue,font=6];
+"typeChecker" -> "dictIdxStack"[color=blue,font=6];
+"typeChecker" -> "typeStack"[color=blue,font=6];
+"typeChecker" -> "argCntStack"[color=blue,font=6];
+"dictionary" -> "declarations"[color=blue,font=6];
+"dictionary" -> "dictStack"[color=blue,font=6];
+"dictIdxStack" -> "declarations"[color=blue,font=6];
+"dictIdxStack" -> "dictStack"[color=blue,font=6];
+"addrStack" -> "declarations"[color=blue,font=6];
+"dictStack" -> "declarations"[color=blue,font=6];
+"typeStack" -> "declarations"[color=blue,font=6];
+"argCntStack" -> "declarations"[color=blue,font=6];
+}
