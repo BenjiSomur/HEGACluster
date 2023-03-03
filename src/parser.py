@@ -1,3 +1,25 @@
+def transpose_mat(ref):
+    aux = [list() for _ in range(len(ref))]
+    for line in ref:
+        for idx, val in enumerate(line):
+            aux[idx].append(val)
+    return aux
+
+
+def sum_lines(arrx):
+    return [*map(lambda x: sum(x), arrx)]
+
+
+def get_globals(ref):
+    aux_ref = list(ref)
+    tr_aux = transpose_mat(aux_ref)
+    sums = sum_lines(aux_ref)
+    sums_tr = sum_lines(tr_aux)
+    for idx, val1, val2 in enumerate(zip(sums, sums_tr)):
+        if val1 == 0 or val2 == 0:
+            yield idx + 1
+
+
 def get_nodes(_data):
     _nodes = []
     for _link in _data:
