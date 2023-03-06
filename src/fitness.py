@@ -49,6 +49,8 @@ def turbomq(_chrom, _ref):
                     alpha[_idx] += val
                 else:
                     id_clusj = get_clus(_idj_aux, _chrom)
+                    if not id_clusj:
+                        continue
                     beta[id_clusj] += val
                     beta[_idx] += val
 
@@ -102,4 +104,5 @@ if __name__ == '__main__':
         data = f.readlines()
     ref = create_table(data)
     chrom = [[1, 3, 5], [2, 7, 12, 13], [4, 10], [6, 8, 11], [9]]
+    # chrom = [[3, 5, 1, 2], [7, 12, 13], [4, 10], [6, 8, 11], [9]]
     print(fitness5(chrom, ref, 0.65))

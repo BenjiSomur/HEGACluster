@@ -90,7 +90,7 @@ def stoch_tourn(pop, pop_size, prt, smpl):
 
 
 def rem_empty(int_part):
-    aux_part = []
+    aux_part = list()
     for l in int_part:
         if l == 0:
             continue
