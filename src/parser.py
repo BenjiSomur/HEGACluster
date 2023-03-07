@@ -1,3 +1,6 @@
+from copy import deepcopy
+
+
 def transpose_mat(ref):
     aux = [list() for _ in range(len(ref))]
     for line in ref:
@@ -11,7 +14,7 @@ def sum_lines(arrx):
 
 
 def get_globals(ref):
-    aux_ref = list(ref)
+    aux_ref = deepcopy(ref)
     tr_aux = transpose_mat(aux_ref)
     sums = sum_lines(aux_ref)
     sums_tr = sum_lines(tr_aux)

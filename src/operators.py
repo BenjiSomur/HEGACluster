@@ -1,5 +1,6 @@
 import random as rnd
 import numpy as np
+from copy import deepcopy, copy
 
 
 def init_population(pop_size, nodes):
@@ -163,8 +164,8 @@ def px1_i(p1, p2):
 
 
 def exchange_i(p1, p2):
-    np1 = list(p2)
-    np2 = list(p1)
+    np1 = deepcopy(p2)
+    np2 = deepcopy(p1)
     return np1, np2
 
 
@@ -352,8 +353,8 @@ def mx(parents, ref, int_type, pc):
 def crossover(parents, ref, cp, _cop, int_type):
     assert _cop in ['onepx', 'cpx', 'uniformx', 'rrx', 'mx']
     if rnd.uniform(0, 1) >= cp:
-        p1 = list(parents[0])
-        p2 = list(parents[1])
+        p1 = deepcopy(parents[0])
+        p2 = deepcopy(parents[1])
         return [p1, p2]
 
     offsp = None
@@ -381,10 +382,10 @@ def getnonbins(intpart):
 
 def mutation(chrom, mp):
     if rnd.uniform(0, 1) > mp:
-        return list(chrom)
+        return deepcopy(chrom)
     nonbins = getnonbins(chrom[1])
     if len(nonbins) < 2:
-        return list(chrom)
+        return deepcopy(chrom)
     pos1, pos2 = rnd.sample(nonbins, 2)
     b_aux = chrom[0][:]
     a_aux = [x for x in chrom[1]]

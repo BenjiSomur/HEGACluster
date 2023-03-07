@@ -1,15 +1,17 @@
 from operator import itemgetter
-from parser import get_nodes, create_table
+from parser import get_nodes, create_table, get_globals
 from initializer import *
 from file_manager import write_headers, write_gen, write_csv
 from operators import init_population, tournament, crossover, mutation, dominance_sort, stoch_tourn
 from fitness import fitness
 from decoder import decode
 from graph_maker import create_graph
+from omnipmods import rep_solut
 import sys
 import os
 import timeit
 import pandas as pd
+from copy import deepcopy
 
 
 def main():
@@ -37,6 +39,7 @@ def main():
              'intx': _intx
              }
     write_headers(_args)
+    glbls = get_globals(ref)
     raw_pop = init_population(pop_size, len(nodes))
     _pop = []
     for chrom in raw_pop:
@@ -81,12 +84,12 @@ def main():
                 _aux.insert(auxid, best)
                 break
         if len(_aux) < pop_size:
-            _aux.append(best)
+            _aux.append(deepcopy(best))
         del _pop
-        _pop = list(_aux)
+        _pop = deepcopy(_aux)
         del best
         del _aux
-        best = list(_pop[0])
+        best = _pop[0]
         print("{}: ".format(no_gen + 1), best)
         no_gen += 1
         _kwargs = {'filename': filename,
@@ -100,6 +103,13 @@ def main():
         write_gen(_kwargs)
         write_csv(_kwargs)
 
+    _pop_aux = list()
+    for sol in _pop:
+        enhanced_indiv = rep_solut(sol, glbls, ref, _theta)
+        _pop_aux.append(enhanced_indiv)
+    _pop = dominance_sort(_pop_aux)
+    best = _pop[0]
+    print("Enhanced {}: ".format(no_gen + 1), best)
     mqs = []
     noclusts = []
     maxclusts = []

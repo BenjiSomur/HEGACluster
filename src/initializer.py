@@ -33,9 +33,9 @@ def get_pop_size(nodes):
 def get_no_gen(nodes):
     n = len(nodes)
     if n <= 30:
-        return 50 * n
+        return 30 * n
     elif n <= 3000:
-        return 20 * n
+        return 25 * n
     elif n <= 10000:
         return 5 * n
     elif n > 10000:
