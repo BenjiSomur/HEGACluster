@@ -1,6 +1,12 @@
 import random as rnd
 import numpy as np
 from copy import deepcopy, copy
+from omnipmods import mutate_indiv
+from decoder import encode
+
+
+def setseed(seed):
+    rnd.seed(seed)
 
 
 def init_population(pop_size, nodes):
@@ -372,26 +378,33 @@ def crossover(parents, ref, cp, _cop, int_type):
     return offsp
 
 
-def getnonbins(intpart):
-    positions = []
-    for x, val in enumerate(intpart):
-        if val > 2:
-            positions.append(x)
-    return positions
-
-
-def mutation(chrom, mp):
+def mutation(chrom, mp, glbls, ref, theta):
     if rnd.uniform(0, 1) > mp:
         return deepcopy(chrom)
-    nonbins = getnonbins(chrom[1])
-    if len(nonbins) < 2:
-        return deepcopy(chrom)
-    pos1, pos2 = rnd.sample(nonbins, 2)
-    b_aux = chrom[0][:]
-    a_aux = [x for x in chrom[1]]
-    a_aux[pos1] -= 1
-    a_aux[pos2] += 1
-    return [b_aux, a_aux]
+    else:
+        return mutate_indiv(chrom, glbls, ref, theta)
+
+
+# def getnonbins(intpart):
+#     positions = []
+#     for x, val in enumerate(intpart):
+#         if val > 2:
+#             positions.append(x)
+#     return positions
+
+
+# def mutation(chrom, mp):
+#     if rnd.uniform(0, 1) > mp:
+#         return deepcopy(chrom)
+#     nonbins = getnonbins(chrom[1])
+#     if len(nonbins) < 2:
+#         return deepcopy(chrom)
+#     pos1, pos2 = rnd.sample(nonbins, 2)
+#     b_aux = chrom[0][:]
+#     a_aux = [x for x in chrom[1]]
+#     a_aux[pos1] -= 1
+#     a_aux[pos2] += 1
+#     return [b_aux, a_aux]
 
 
 # def mutation(chrom, mp):
