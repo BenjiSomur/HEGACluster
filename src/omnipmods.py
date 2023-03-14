@@ -82,9 +82,18 @@ def get_omnilocals(ref, chrom):
                 yield nomod
 
 
+def detomnlcls(ref, omnlocals):
+    aux_ref = transpose_mat(ref)
+    locls = list()
+    for idx in omnlocals:
+        locls.append((idx, sum(ref[idx - 1]) + sum(aux_ref[idx - 1])))
+    aux_locls = sorted(locls, key=lambda x: x[1])
+    return aux_locls
+
+
 def extendomns(omns, lcls):
-    aux = deepcopy(omns)
-    for auxid in lcls:
+    aux = omns[:]
+    for (auxid, _) in lcls:
         if auxid in aux:
             continue
         aux.append(auxid)
@@ -97,7 +106,9 @@ def rep_solut(sol, gbls, ref, theta):
     gamma = ceil(0.2 * len(chrom)) + 1
     omns = [x for x in detomns(gbls, chrom, ref)]
     omnilocals = [y for y in get_omnilocals(ref, chrom)]
-    omns = extendomns(omns, omnilocals[:gamma])
+    highestomnilocals = detomnlcls(ref, omnilocals)
+    omns = extendomns(omns, highestomnilocals[len(
+        highestomnilocals) - (gamma + 1):])
     chrprim, orgs = extract_omnis(omns, chrom)
     for idx, omn in enumerate(omns):
         mqprim = turbomq(chrprim, ref)
@@ -126,13 +137,50 @@ def rep_solut(sol, gbls, ref, theta):
         return deepcopy(sol)
 
 
+# def rep_solut(sol, gbls, ref, theta):
+#     auxsol = list(sol)
+#     chrom = decode(auxsol[0], len(ref))
+#     gamma = ceil(0.2 * len(chrom)) + 1
+#     omns = [x for x in detomns(gbls, chrom, ref)]
+#     omnilocals = [y for y in get_omnilocals(ref, chrom)]
+#     omns = extendomns(omns, omnilocals[:gamma])
+#     chrprim, orgs = extract_omnis(omns, chrom)
+#     for idx, omn in enumerate(omns):
+#         mqprim = turbomq(chrprim, ref)
+#         dscores = from_clus(omn, ref, chrprim)
+#         highscores = get_highest(dscores, gamma)
+#         deltamq = [0] * len(highscores)
+#         for idy, (clusno, _) in enumerate(highscores):
+#             auxchr = deepcopy(chrprim)
+#             auxchr[clusno].append(omn)
+#             auxmq = turbomq(auxchr, ref)
+#             deltamq[idy] += (auxmq - mqprim)
+#         maxid = deltamq.index(max(deltamq))
+#         if deltamq[maxid] > 0:
+#             chrprim[highscores[maxid][0]].append(omn)
+#         else:
+#             try:
+#                 orig = orgs[idx][1]
+#                 chrprim[orig].append(omn)
+#             except IndexError:
+#                 chrprim.append([omn])
+#     ressol = encode(chrprim, len(ref))
+#     fitprim = fitness(ressol, ref, theta)
+#     if fitprim[1] >= sol[1][1]:
+#         return [*[ressol], fitprim]
+#     else:
+#         return deepcopy(sol)
+
+
 def mutate_indiv(sol, gbls, ref, theta):
     auxfit = fitness(sol, ref, theta)
     chrom = decode(sol, len(ref))
     gamma = ceil(0.2 * len(chrom)) + 1
     omns = [x for x in detomns(gbls, chrom, ref)]
     omnilocals = [y for y in get_omnilocals(ref, chrom)]
-    omns = extendomns(omns, omnilocals[:gamma])
+    highestomnilocals = detomnlcls(ref, omnilocals)
+    omns = extendomns(omns, highestomnilocals[len(
+        highestomnilocals) - (gamma + 1):])
     chrprim, orgs = extract_omnis(omns, chrom)
     for idx, omn in enumerate(omns):
         mqprim = turbomq(chrprim, ref)
@@ -160,8 +208,8 @@ def mutate_indiv(sol, gbls, ref, theta):
 if __name__ == '__main__':
     _streval = 'from parser import create_table, get_globals'
     exec(_streval)
-    # with open('../mdgs/mini-tunis.mdg', 'r') as f:
-    with open('../mdgs/icecast.mdg', 'r') as f:
+    with open('../mdgs/mini-tunis.mdg', 'r') as f:
+        # with open('../mdgs/icecast.mdg', 'r') as f:
         data = f.readlines()
     ref = create_table(data)
     glbls = [*get_globals(ref)]
@@ -172,8 +220,8 @@ if __name__ == '__main__':
 
     # chrom = [[9, 11, 12, 13], [1, 3], [8, 10], [
     #     2, 5, 7, 8, 10], [6, 14, 16], [4, 15, 17, 18, 19, 20]]
-    # chrom = [[9, 7, 6], [1, 11, 3], [2, 8, 4, 5, 10],
-    #          [13, 12], [14, 15, 16], [18, 17, 19, 20]]
+    chrom = [[9, 7, 6], [1, 11, 3], [2, 8, 4, 5, 10],
+             [13, 12], [14, 15, 16], [18, 17, 19, 20]]
 
     # chrom = [[4, 10], [9, 2, 3], [1, 5, 11, 6], [8, 7, 13], [12]]
     # chrom = [[9, 6, 4], [8, 11], [13, 7, 10, 2, 12], [1, 3, 5]]
@@ -183,11 +231,13 @@ if __name__ == '__main__':
     # #          [24, 26, 25, 29, 30, 32, 37, 33, 38, 36, 39, 34, 42, 47, 41, 46, 43, 45, 44, 52, 57, 49, 53, 50, 48, 55, 54], [56, 58, 59, 60]]
     # chrom = [[2, 14, 1, 27, 7, 40, 3, 35, 4], [11], [5, 6], [10, 8, 13, 21, 9, 31], [15, 28], [12], [16, 17, 23, 18, 51, 19, 20, 22],
     #          [24, 26, 25, 29, 30, 32, 37, 33, 38, 36, 39, 34, 42, 47, 41, 46, 43, 45, 44, 52, 57, 49, 53, 50, 48, 55, 54, 56, 58, 59, 60]]
-    # sol = encode(chrom, len(ref))
-    sol = ['000001101000000011100011011001000010001110011011000111000100000101000110001010001000001101010101001001001111011100001100010000010111010010011000101100010100001011010011011010011111101110101111110011010110011101011110100000100101101101110110100001100110100100100111100010110010101010010001101001101011110100111001110001110101110000110111111000111010111011111100', [9, 7, 9, 8, 7, 6, 2, 3, 2, 6, 1]]
+    sol = encode(chrom, len(ref))
+
+    # sol = ['000001101000000011100011011001000010001110011011000111000100000101000110001010001000001101010101001001001111011100001100010000010111010010011000101100010100001011010011011010011111101110101111110011010110011101011110100000100101101101110110100001100110100100100111100010110010101010010001101001101011110100111001110001110101110000110111111000111010111011111100', [9, 7, 9, 8, 7, 6, 2, 3, 2, 6, 1]]
     testfit = fitness(sol, ref, 0.65)
     print([*[sol], testfit])
-    # sol2 = rep_solut([sol, testfit], glbls, ref, 0.65)
-    sol2 = mutate_indiv(sol, glbls, ref, 0.65)
-    fit2 = fitness(sol2, ref, 0.65)
-    print([*[sol2], fit2])
+    sol2 = rep_solut([sol, testfit], glbls, ref, 0.65)
+    # sol2 = mutate_indiv(sol, glbls, ref, 0.65)
+    # fit2 = fitness(sol2, ref, 0.65)
+    # print([*[sol2], fit2])
+    print(sol2)
