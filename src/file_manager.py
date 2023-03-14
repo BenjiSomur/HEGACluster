@@ -12,10 +12,9 @@ def write_headers(kwargs):
     _im_type = kwargs['type']
     _theta = kwargs['theta']
     _intx = kwargs['intx']
-    _seed = kwargs['seed']
     _header1 = f'Implementation: {_im_type}\nBenchmark:{_filename}\nIteration:{_it_no}\n'
-    _header2 = 'Pop size: {}\nCrossover: {}\nMutation: {}\nTheta: {}\nSeed: {}\n'.format(_pop_size,
-                                                                                         _cp, _mp, _theta, _seed)
+    _header2 = 'Pop size: {}\nCrossover: {}\nMutation: {}\nTheta: {}\n'.format(_pop_size,
+                                                                               _cp, _mp, _theta)
     _path = f'./{_filename}/{_im_type}/{_intx}'
     if not os.path.exists(_path):
         os.makedirs(_path)

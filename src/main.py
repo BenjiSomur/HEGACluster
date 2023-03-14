@@ -2,7 +2,7 @@ from operator import itemgetter
 from parser import get_nodes, create_table, get_globals
 from initializer import *
 from file_manager import write_headers, write_gen, write_csv
-from operators import init_population, tournament, crossover, mutation, dominance_sort, stoch_tourn, setseed
+from operators import init_population, tournament, crossover, mutation, dominance_sort, stoch_tourn
 from fitness import fitness
 from decoder import decode
 from graph_maker import create_graph
@@ -12,12 +12,9 @@ import os
 import timeit
 import pandas as pd
 from copy import deepcopy
-import random as rnd
 
 
 def main():
-    seed = rnd.seed()
-    setseed(seed)
     data = None
     it_no = sys.argv[1]
     filename = sys.argv[2]
@@ -39,8 +36,7 @@ def main():
              'it_no': it_no,
              'theta': _theta,
              'type': _cop,
-             'intx': _intx,
-             'seed': seed
+             'intx': _intx
              }
     write_headers(_args)
     glbls = get_globals(ref)
@@ -107,23 +103,23 @@ def main():
         write_gen(_kwargs)
         write_csv(_kwargs)
 
-    # _pop_aux = list()
-    # for sol in _pop:
-    #     enhanced_indiv = rep_solut(sol, glbls, ref, _theta)
-    #     _pop_aux.append(enhanced_indiv)
-    # _pop = dominance_sort(_pop_aux)
-    # best = _pop[0]
-    # print("Enhanced {}: ".format(no_gen + 1), best)
-    # _kwargs = {'filename': filename,
-    #            'it_no': it_no,
-    #            'type': _cop,
-    #            'best': best[0],
-    #            'fitness': best[1],
-    #            'gen': 'enhanced',
-    #            'nodes': len(ref),
-    #            'intx': _intx}
-    # write_gen(_kwargs)
-    # write_csv(_kwargs)
+    _pop_aux = list()
+    for sol in _pop:
+        enhanced_indiv = rep_solut(sol, glbls, ref, _theta)
+        _pop_aux.append(enhanced_indiv)
+    _pop = dominance_sort(_pop_aux)
+    best = _pop[0]
+    print("Enhanced {}: ".format(no_gen + 1), best)
+    _kwargs = {'filename': filename,
+               'it_no': it_no,
+               'type': _cop,
+               'best': best[0],
+               'fitness': best[1],
+               'gen': 'enhanced',
+               'nodes': len(ref),
+               'intx': _intx}
+    write_gen(_kwargs)
+    write_csv(_kwargs)
     mqs = []
     noclusts = []
     maxclusts = []
