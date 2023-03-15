@@ -5,10 +5,6 @@ from omnipmods import mutate_indiv
 from decoder import encode
 
 
-def setseed(seed):
-    rnd.seed(seed)
-
-
 def init_population(pop_size, nodes):
     max_bits = len("{0:b}".format(nodes))
     ratio = "0{}b".format(max_bits)

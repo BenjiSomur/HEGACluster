@@ -103,23 +103,23 @@ def main():
         write_gen(_kwargs)
         write_csv(_kwargs)
 
-    _pop_aux = list()
-    for sol in _pop:
-        enhanced_indiv = rep_solut(sol, glbls, ref, _theta)
-        _pop_aux.append(enhanced_indiv)
-    _pop = dominance_sort(_pop_aux)
-    best = _pop[0]
-    print("Enhanced {}: ".format(no_gen + 1), best)
-    _kwargs = {'filename': filename,
-               'it_no': it_no,
-               'type': _cop,
-               'best': best[0],
-               'fitness': best[1],
-               'gen': 'enhanced',
-               'nodes': len(ref),
-               'intx': _intx}
-    write_gen(_kwargs)
-    write_csv(_kwargs)
+    # _pop_aux = list()
+    # for sol in _pop:
+    #     enhanced_indiv = rep_solut(sol, glbls, ref, _theta)
+    #     _pop_aux.append(enhanced_indiv)
+    # _pop = dominance_sort(_pop_aux)
+    # best = _pop[0]
+    # print("Enhanced {}: ".format(no_gen + 1), best)
+    # _kwargs = {'filename': filename,
+    #            'it_no': it_no,
+    #            'type': _cop,
+    #            'best': best[0],
+    #            'fitness': best[1],
+    #            'gen': 'enhanced',
+    #            'nodes': len(ref),
+    #            'intx': _intx}
+    # write_gen(_kwargs)
+    # write_csv(_kwargs)
     mqs = []
     noclusts = []
     maxclusts = []
