@@ -60,12 +60,21 @@ def get_cp(nodes):
 #     x = math.log2(n)
 #     return 15 / (17 * x)
 
-def get_mp(nodes):
-    n = len(nodes)
-    x = math.sqrt(n)
-    return 16 / (10 * x)
+# def get_mp(nodes):
+#     n = len(nodes)
+#     x = math.sqrt(n)
+#     return 16 / (10 * x)
 
 # def get_mp(nodes):
 #     n = len(nodes)
 #     x = math.log2(n)
 #     return 16 / (0.004 * x)
+
+# def get_mp(nodes):
+#     n = math.radians(len(nodes) + 1)
+#     x = math.sin(n)
+#     return 13 / (100 * x)
+
+def get_mp(nodes):
+    n = len(nodes)
+    return (0.01629 * n) - 0.32197
