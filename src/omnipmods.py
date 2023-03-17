@@ -92,12 +92,10 @@ def detomnlcls(ref, omnlocals):
 
 
 def extendomns(omns, lcls):
-    aux = omns[:]
+    aux = set(omns)
     for (auxid, _) in lcls:
-        if auxid in aux:
-            continue
-        aux.append(auxid)
-    return aux
+        aux.add(auxid)
+    return list(aux)
 
 
 def rep_solut(sol, gbls, ref, theta):
@@ -135,41 +133,6 @@ def rep_solut(sol, gbls, ref, theta):
         return [*[ressol], fitprim]
     else:
         return deepcopy(sol)
-
-
-# def rep_solut(sol, gbls, ref, theta):
-#     auxsol = list(sol)
-#     chrom = decode(auxsol[0], len(ref))
-#     gamma = ceil(0.2 * len(chrom)) + 1
-#     omns = [x for x in detomns(gbls, chrom, ref)]
-#     omnilocals = [y for y in get_omnilocals(ref, chrom)]
-#     omns = extendomns(omns, omnilocals[:gamma])
-#     chrprim, orgs = extract_omnis(omns, chrom)
-#     for idx, omn in enumerate(omns):
-#         mqprim = turbomq(chrprim, ref)
-#         dscores = from_clus(omn, ref, chrprim)
-#         highscores = get_highest(dscores, gamma)
-#         deltamq = [0] * len(highscores)
-#         for idy, (clusno, _) in enumerate(highscores):
-#             auxchr = deepcopy(chrprim)
-#             auxchr[clusno].append(omn)
-#             auxmq = turbomq(auxchr, ref)
-#             deltamq[idy] += (auxmq - mqprim)
-#         maxid = deltamq.index(max(deltamq))
-#         if deltamq[maxid] > 0:
-#             chrprim[highscores[maxid][0]].append(omn)
-#         else:
-#             try:
-#                 orig = orgs[idx][1]
-#                 chrprim[orig].append(omn)
-#             except IndexError:
-#                 chrprim.append([omn])
-#     ressol = encode(chrprim, len(ref))
-#     fitprim = fitness(ressol, ref, theta)
-#     if fitprim[1] >= sol[1][1]:
-#         return [*[ressol], fitprim]
-#     else:
-#         return deepcopy(sol)
 
 
 def mutate_indiv(sol, gbls, ref, theta):
