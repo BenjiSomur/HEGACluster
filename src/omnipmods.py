@@ -108,15 +108,18 @@ def rep_solut(sol, gbls, ref, theta):
     omns = extendomns(omns, highestomnilocals[len(
         highestomnilocals) - (gamma + 1):])
     chrprim, orgs = extract_omnis(omns, chrom)
+    ref_tuple = tuple(map(tuple, ref))
     for idx, omn in enumerate(omns):
-        mqprim = turbomq(chrprim, ref)
+        _chrprim = tuple(map(tuple, chrprim))
+        mqprim = turbomq(_chrprim, ref_tuple)
         dscores = from_clus(omn, ref, chrprim)
         highscores = get_highest(dscores, gamma)
         deltamq = [0] * len(highscores)
         for idy, (clusno, _) in enumerate(highscores):
             auxchr = deepcopy(chrprim)
             auxchr[clusno].append(omn)
-            auxmq = turbomq(auxchr, ref)
+            _auxchr = tuple(map(tuple, auxchr))
+            auxmq = turbomq(_auxchr, ref_tuple)
             deltamq[idy] += (auxmq - mqprim)
         maxid = deltamq.index(max(deltamq))
         if deltamq[maxid] > 0:
@@ -145,15 +148,18 @@ def mutate_indiv(sol, gbls, ref, theta):
     omns = extendomns(omns, highestomnilocals[len(
         highestomnilocals) - (gamma + 1):])
     chrprim, orgs = extract_omnis(omns, chrom)
+    ref_tuple = tuple(map(tuple, ref))
     for idx, omn in enumerate(omns):
-        mqprim = turbomq(chrprim, ref)
+        _chrprim = tuple(map(tuple, chrprim))
+        mqprim = turbomq(_chrprim, ref_tuple)
         dscores = from_clus(omn, ref, chrprim)
         highscores = get_highest(dscores, gamma)
         deltamq = [0] * len(highscores)
         for idy, (clusno, _) in enumerate(highscores):
             auxchr = deepcopy(chrprim)
             auxchr[clusno].append(omn)
-            auxmq = turbomq(auxchr, ref)
+            _auxchr = tuple(map(tuple, auxchr))
+            auxmq = turbomq(_auxchr, ref_tuple)
             deltamq[idy] += (auxmq - mqprim)
         maxid = deltamq.index(max(deltamq))
         if deltamq[maxid] > 0:

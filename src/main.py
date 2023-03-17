@@ -3,7 +3,7 @@ from parser import get_nodes, create_table, get_globals
 from initializer import *
 from file_manager import write_headers, write_gen, write_csv
 from operators import init_population, tournament, crossover, mutation, dominance_sort, stoch_tourn
-from fitness import fitness
+from fitness import fitness, turbomq, get_clus
 from decoder import decode
 from graph_maker import create_graph
 from omnipmods import rep_solut
@@ -131,7 +131,8 @@ def main():
         minclusts.append(min(p[0][1]))
     results = pd.DataFrame(list(zip(mqs, noclusts, maxclusts, minclusts)), columns=[
                            'mq', 'No. Clus', 'Max clus', 'Min clus'])
-
+    get_clus.cache_clear()
+    turbomq.cache_clear()
     try:
         os.makedirs(f'./{filename}/{_cop}/{_intx}/{it_no}/final_population')
     except IOError:

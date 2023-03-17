@@ -1,11 +1,17 @@
 from decoder import decode
+from functools import lru_cache
+import psutil
+
+total_memory = psutil.virtual_memory().available
+cache_percent = 0.05
+cache_size = int(total_memory * cache_percent)
 
 
 def memoize_fitness(func):
     cache = {}
 
     def memoized_func(chrom, ref):
-        key = (tuple(map(tuple, chrom)), tuple(map(tuple, ref)))
+        key = hash((tuple(map(tuple, chrom)), tuple(map(tuple, ref))))
         if key in cache:
             return cache[key]
         else:
@@ -22,7 +28,7 @@ def memoize(func):
     def memoized_func(*args):
         _ref, _chrom = args
         # convert _chrom to tuple of tuples
-        key = (_ref, tuple(map(tuple, _chrom)))
+        key = hash((_ref, tuple(map(tuple, _chrom))))
         if key in cache:
             return cache[key]
         else:
@@ -32,12 +38,12 @@ def memoize(func):
     return memoized_func
 
 
-@memoize
+@lru_cache(maxsize=cache_size)
 def get_clus(_ref, _chrom):
     return next((idx for idx, clust in enumerate(_chrom) if _ref in clust), None)
 
 
-@memoize_fitness
+@lru_cache(maxsize=cache_size)
 def turbomq(chrom, ref):
     alpha = [0] * len(chrom)
     beta = [0] * len(chrom)
@@ -79,7 +85,9 @@ def get_clusmin(_chrom):
 
 def fitness(_indiv, _ref, _theta):
     _chrom = decode(_indiv, len(_ref))
-    tmq = turbomq(_chrom, _ref)
+    chrom_tuple = tuple(map(tuple, _chrom))
+    ref_tuple = tuple(map(tuple, _ref))
+    tmq = turbomq(chrom_tuple, ref_tuple)
     nc = len(_chrom) / len(_ref)
     _deltaclus = (max(_indiv[1]) - min(_indiv[1])) / len(_ref)
     return [(tmq * _theta) + (((1-_theta)/2) * (nc + (1-_deltaclus))), tmq]
