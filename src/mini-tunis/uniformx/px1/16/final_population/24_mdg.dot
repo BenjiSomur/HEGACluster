@@ -1,0 +1,100 @@
+digraph G {
+size = "20,20";
+subgraph cluster0 {
+label = "CL:Disk";
+color = black;
+style = bold;
+"Disk"[label="Disk",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"Control"[label="Control",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"main"[label="main",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"User"[label="User",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+}
+subgraph cluster1 {
+label = "CL:Memory";
+color = black;
+style = bold;
+"Memory"[label="Memory",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"Computer"[label="Computer",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"State"[label="State",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"Panic"[label="Panic",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+}
+subgraph cluster2 {
+label = "CL:Directory";
+color = black;
+style = bold;
+"Directory"[label="Directory",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"Family"[label="Family",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"Device"[label="Device",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"Tty"[label="Tty",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"Inode"[label="Inode",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"System"[label="System",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"File"[label="File",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+}
+subgraph cluster3 {
+label = "CL:FileTable";
+color = black;
+style = bold;
+"FileTable"[label="FileTable",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"FreeInode"[label="FreeInode",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"InodeGlobals"[label="InodeGlobals",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"FileIO"[label="FileIO",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+"InodeTable"[label="InodeTable",shape=ellipse,color=lightblue,fontcolor=black,style=filled];
+}
+"main" -> "User"[color=blue,font=6];
+"main" -> "Control"[color=blue,font=6];
+"User" -> "Panic"[color=blue,font=6];
+"User" -> "Computer"[color=blue,font=6];
+"User" -> "File"[color=blue,font=6];
+"User" -> "Memory"[color=blue,font=6];
+"User" -> "Family"[color=blue,font=6];
+"User" -> "System"[color=blue,font=6];
+"User" -> "State"[color=blue,font=6];
+"Control" -> "Family"[color=blue,font=6];
+"Control" -> "Panic"[color=blue,font=6];
+"Control" -> "File"[color=blue,font=6];
+"Control" -> "Tty"[color=blue,font=6];
+"Control" -> "System"[color=blue,font=6];
+"Family" -> "State"[color=blue,font=6];
+"State" -> "System"[color=blue,font=6];
+"State" -> "File"[color=blue,font=6];
+"State" -> "Memory"[color=blue,font=6];
+"State" -> "Computer"[color=blue,font=6];
+"Computer" -> "Panic"[color=blue,font=6];
+"Computer" -> "System"[color=blue,font=6];
+"Memory" -> "Computer"[color=blue,font=6];
+"Memory" -> "File"[color=blue,font=6];
+"Memory" -> "System"[color=blue,font=6];
+"Device" -> "System"[color=blue,font=6];
+"Device" -> "Disk"[color=blue,font=6];
+"Device" -> "Tty"[color=blue,font=6];
+"Disk" -> "Panic"[color=blue,font=6];
+"Disk" -> "System"[color=blue,font=6];
+"Tty" -> "System"[color=blue,font=6];
+"File" -> "Panic"[color=blue,font=6];
+"File" -> "Directory"[color=blue,font=6];
+"File" -> "Inode"[color=blue,font=6];
+"File" -> "FileTable"[color=blue,font=6];
+"File" -> "System"[color=blue,font=6];
+"Directory" -> "Panic"[color=blue,font=6];
+"Directory" -> "Inode"[color=blue,font=6];
+"FileTable" -> "Inode"[color=blue,font=6];
+"Inode" -> "System"[color=blue,font=6];
+"Inode" -> "Panic"[color=blue,font=6];
+"Inode" -> "Device"[color=blue,font=6];
+"Inode" -> "InodeGlobals"[color=blue,font=6];
+"Inode" -> "FileIO"[color=blue,font=6];
+"Inode" -> "FreeInode"[color=blue,font=6];
+"Inode" -> "InodeTable"[color=blue,font=6];
+"InodeTable" -> "InodeGlobals"[color=blue,font=6];
+"InodeTable" -> "FreeInode"[color=blue,font=6];
+"InodeTable" -> "FileIO"[color=blue,font=6];
+"InodeTable" -> "Panic"[color=blue,font=6];
+"FileIO" -> "Panic"[color=blue,font=6];
+"FileIO" -> "Device"[color=blue,font=6];
+"FileIO" -> "InodeGlobals"[color=blue,font=6];
+"FreeInode" -> "InodeGlobals"[color=blue,font=6];
+"FreeInode" -> "FileIO"[color=blue,font=6];
+"InodeGlobals" -> "System"[color=blue,font=6];
+"InodeGlobals" -> "Panic"[color=blue,font=6];
+"InodeGlobals" -> "Device"[color=blue,font=6];
+}
