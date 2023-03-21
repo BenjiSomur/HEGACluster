@@ -2,7 +2,7 @@
 read -p "Enter the name of the system: " filename
 read -p "Enter the binary crossover: " bincross
 
-declare -a IntCrossoverArray=("px1" "exchange" "inverse")
+declare -a IntCrossoverArray=("cpx" "px1" "inverse")
 
 eval "$(conda shell.bash hook)"
 source ~/anaconda3/etc/profile.d/conda.sh
