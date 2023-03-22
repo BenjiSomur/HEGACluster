@@ -3,7 +3,7 @@ from parser import get_nodes, create_table, get_globals
 from initializer import *
 from file_manager import write_headers, write_gen, write_csv
 from operators import init_population, tournament, crossover, mutation, dominance_sort, stoch_tourn
-from fitness import fitness, turbomq, get_clus
+from fitness import Fitness
 from decoder import decode
 from graph_maker import create_graph
 from omnipmods import rep_solut
@@ -12,6 +12,12 @@ import os
 import timeit
 import pandas as pd
 from copy import deepcopy
+import psutil
+
+
+total_memory = psutil.virtual_memory().available
+cache_percent = 0.03
+cache_size = int(total_memory * cache_percent)
 
 
 def main():
@@ -29,6 +35,7 @@ def main():
     mp = get_mp(nodes)
     _theta = get_theta(nodes)
     gens = get_no_gen(nodes)
+    fitness = Fitness(ref, _theta, cache_size)
     _args = {'filename': filename,
              'pop_size': pop_size,
              'cp': cp,
@@ -43,7 +50,7 @@ def main():
     raw_pop = init_population(pop_size, len(nodes))
     _pop = []
     for chrom in raw_pop:
-        ft = fitness(chrom, ref, _theta)
+        ft = fitness(chrom)
         _pop.append([chrom, ft])
     del raw_pop
     _pop = dominance_sort(_pop)
@@ -63,18 +70,17 @@ def main():
     write_gen(_kwargs)
     write_csv(_kwargs)
     while no_gen < gens:
-        # parents = list(stoch_tourn(_pop, pop_size, 0.8, 4))
         parents = list(tournament(_pop, pop_size))
         offsp = list()
         for i in range(0, len(parents), 2):
             gen_chld = crossover(
                 [_pop[parents[i]][0], _pop[parents[i+1]][0]], len(nodes), cp, _cop, _intx)
-            chld1 = mutation(gen_chld[0], mp, glbls, ref, _theta)
-            chld2 = mutation(gen_chld[1], mp, glbls, ref, _theta)
+            chld1 = mutation(gen_chld[0], mp, glbls, ref, fitness)
+            chld2 = mutation(gen_chld[1], mp, glbls, ref, fitness)
             offsp += [chld1, chld2]
         aux = list()
         for chrom in offsp:
-            ft = fitness(chrom, ref, _theta)
+            ft = fitness(chrom)
             aux.append([chrom, ft])
 
         _aux = dominance_sort(aux)
@@ -103,23 +109,23 @@ def main():
         write_gen(_kwargs)
         write_csv(_kwargs)
 
-    _pop_aux = list()
-    for sol in _pop:
-        enhanced_indiv = rep_solut(sol, glbls, ref, _theta)
-        _pop_aux.append(enhanced_indiv)
-    _pop = dominance_sort(_pop_aux)
-    best = _pop[0]
-    print("Enhanced {}: ".format(no_gen + 1), best)
-    _kwargs = {'filename': filename,
-               'it_no': it_no,
-               'type': _cop,
-               'best': best[0],
-               'fitness': best[1],
-               'gen': 'enhanced',
-               'nodes': len(ref),
-               'intx': _intx}
-    write_gen(_kwargs)
-    write_csv(_kwargs)
+    # _pop_aux = list()
+    # for sol in _pop:
+    #     enhanced_indiv = rep_solut(sol, glbls, ref, fitness)
+    #     _pop_aux.append(enhanced_indiv)
+    # _pop = dominance_sort(_pop_aux)
+    # best = _pop[0]
+    # print("Enhanced {}: ".format(no_gen + 1), best)
+    # _kwargs = {'filename': filename,
+    #            'it_no': it_no,
+    #            'type': _cop,
+    #            'best': best[0],
+    #            'fitness': best[1],
+    #            'gen': 'enhanced',
+    #            'nodes': len(ref),
+    #            'intx': _intx}
+    # write_gen(_kwargs)
+    # write_csv(_kwargs)
     mqs = []
     noclusts = []
     maxclusts = []
@@ -131,8 +137,8 @@ def main():
         minclusts.append(min(p[0][1]))
     results = pd.DataFrame(list(zip(mqs, noclusts, maxclusts, minclusts)), columns=[
                            'mq', 'No. Clus', 'Max clus', 'Min clus'])
-    get_clus.cache_clear()
-    turbomq.cache_clear()
+    # get_clus.cache_clear()
+    # turbomq.cache_clear()
     try:
         os.makedirs(f'./{filename}/{_cop}/{_intx}/{it_no}/final_population')
     except IOError:

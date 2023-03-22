@@ -1,6 +1,5 @@
 from decoder import decode, encode
 from math import ceil
-from fitness import get_clus, turbomq, fitness
 from copy import deepcopy
 from parser import transpose_mat
 import numpy as np
@@ -98,7 +97,7 @@ def extendomns(omns, lcls):
     return list(aux)
 
 
-def rep_solut(sol, gbls, ref, theta):
+def rep_solut(sol, gbls, ref, ftns):
     auxsol = list(sol)
     chrom = decode(auxsol[0], len(ref))
     gamma = ceil(0.2 * len(chrom)) + 1
@@ -108,10 +107,9 @@ def rep_solut(sol, gbls, ref, theta):
     omns = extendomns(omns, highestomnilocals[len(
         highestomnilocals) - (gamma + 1):])
     chrprim, orgs = extract_omnis(omns, chrom)
-    ref_tuple = tuple(map(tuple, ref))
     for idx, omn in enumerate(omns):
         _chrprim = tuple(map(tuple, chrprim))
-        mqprim = turbomq(_chrprim, ref_tuple)
+        mqprim = ftns.turbo_mq(_chrprim)
         dscores = from_clus(omn, ref, chrprim)
         highscores = get_highest(dscores, gamma)
         deltamq = [0] * len(highscores)
@@ -119,7 +117,7 @@ def rep_solut(sol, gbls, ref, theta):
             auxchr = deepcopy(chrprim)
             auxchr[clusno].append(omn)
             _auxchr = tuple(map(tuple, auxchr))
-            auxmq = turbomq(_auxchr, ref_tuple)
+            auxmq = ftns.turbo_mq(_auxchr)
             deltamq[idy] += (auxmq - mqprim)
         maxid = deltamq.index(max(deltamq))
         if deltamq[maxid] > 0:
@@ -131,15 +129,15 @@ def rep_solut(sol, gbls, ref, theta):
             except IndexError:
                 chrprim.append([omn])
     ressol = encode(chrprim, len(ref))
-    fitprim = fitness(ressol, ref, theta)
+    fitprim = ftns(ressol)
     if fitprim[1] >= sol[1][1]:
         return [*[ressol], fitprim]
     else:
         return deepcopy(sol)
 
 
-def mutate_indiv(sol, gbls, ref, theta):
-    auxfit = fitness(sol, ref, theta)
+def mutate_indiv(sol, gbls, ref, ftns):
+    auxfit = ftns(sol)
     chrom = decode(sol, len(ref))
     gamma = ceil(0.2 * len(chrom)) + 1
     omns = [x for x in detomns(gbls, chrom, ref)]
@@ -148,10 +146,9 @@ def mutate_indiv(sol, gbls, ref, theta):
     omns = extendomns(omns, highestomnilocals[len(
         highestomnilocals) - (gamma + 1):])
     chrprim, orgs = extract_omnis(omns, chrom)
-    ref_tuple = tuple(map(tuple, ref))
     for idx, omn in enumerate(omns):
         _chrprim = tuple(map(tuple, chrprim))
-        mqprim = turbomq(_chrprim, ref_tuple)
+        mqprim = ftns.turbo_mq(_chrprim)
         dscores = from_clus(omn, ref, chrprim)
         highscores = get_highest(dscores, gamma)
         deltamq = [0] * len(highscores)
@@ -159,7 +156,7 @@ def mutate_indiv(sol, gbls, ref, theta):
             auxchr = deepcopy(chrprim)
             auxchr[clusno].append(omn)
             _auxchr = tuple(map(tuple, auxchr))
-            auxmq = turbomq(_auxchr, ref_tuple)
+            auxmq = ftns.turbo_mq(_auxchr)
             deltamq[idy] += (auxmq - mqprim)
         maxid = deltamq.index(max(deltamq))
         if deltamq[maxid] > 0:

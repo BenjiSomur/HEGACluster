@@ -1,103 +1,24 @@
 from decoder import decode
-from functools import lru_cache
-import psutil
-
-total_memory = psutil.virtual_memory().available
-cache_percent = 0.05
-cache_size = int(total_memory * cache_percent)
+from turbomq import TurboMQ
 
 
-def memoize_fitness(func):
-    cache = {}
+class Fitness:
+    def __init__(self, ref, theta, cachesize):
+        self.cachesize = cachesize
+        self.turbo_mq = TurboMQ(ref, cachesize)
+        self.ref = tuple(map(tuple, ref))
+        self.lenref = len(ref)
+        self.theta = theta
 
-    def memoized_func(chrom, ref):
-        key = hash((tuple(map(tuple, chrom)), tuple(map(tuple, ref))))
-        if key in cache:
-            return cache[key]
-        else:
-            result = func(chrom, ref)
-            cache[key] = result
-            return result
-
-    return memoized_func
-
-
-def memoize(func):
-    cache = {}
-
-    def memoized_func(*args):
-        _ref, _chrom = args
-        # convert _chrom to tuple of tuples
-        key = hash((_ref, tuple(map(tuple, _chrom))))
-        if key in cache:
-            return cache[key]
-        else:
-            result = func(*args)
-            cache[key] = result
-            return result
-    return memoized_func
-
-
-@lru_cache(maxsize=cache_size)
-def get_clus(_ref, _chrom):
-    return next((idx for idx, clust in enumerate(_chrom) if _ref in clust), None)
-
-
-@lru_cache(maxsize=cache_size)
-def turbomq(chrom, ref):
-    alpha = [0] * len(chrom)
-    beta = [0] * len(chrom)
-    chrom_sets = [set(clust) for clust in chrom]
-    for idx, clust in enumerate(chrom):
-        for idi in clust:
-            for idj, val in enumerate(ref[idi-1]):
-                if val == 0:
-                    continue
-                idj_aux = idj + 1
-                if idj_aux in chrom_sets[idx]:
-                    alpha[idx] += val
-                else:
-                    id_clusj = get_clus(idj_aux, chrom)
-                    if id_clusj is None:
-                        continue
-                    beta[id_clusj] += val
-                    beta[idx] += val
-    return sum(alpha[i]/(alpha[i] + beta[i]/2) if alpha[i] + beta[i]/2 > 0 else 0 for i in range(len(chrom)))
-
-
-def get_clusmax(_chrom):
-    size = 0
-    for clus in _chrom:
-        _sz = len(clus)
-        if _sz >= size:
-            size = _sz
-    return size
-
-
-def get_clusmin(_chrom):
-    size = 10000000
-    for clus in _chrom:
-        _sz = len(clus)
-        if _sz < size:
-            size = _sz
-    return size
-
-
-def fitness(_indiv, _ref, _theta):
-    _chrom = decode(_indiv, len(_ref))
-    chrom_tuple = tuple(map(tuple, _chrom))
-    ref_tuple = tuple(map(tuple, _ref))
-    tmq = turbomq(chrom_tuple, ref_tuple)
-    nc = len(_chrom) / len(_ref)
-    _deltaclus = (max(_indiv[1]) - min(_indiv[1])) / len(_ref)
-    return [(tmq * _theta) + (((1-_theta)/2) * (nc + (1-_deltaclus))), tmq]
-
-
-def fitness5(_chrom, _ref, _theta):
-    tmq = turbomq2(_chrom, _ref)
-    nc = len(_chrom) / len(_ref)
-    _deltaclus = (get_clusmax(_chrom) - get_clusmin(_chrom)) / len(_ref)
-    return [(tmq * _theta) + (((1-_theta)/2) * (nc + (1-_deltaclus))), tmq]
+    def __call__(self, _indiv):
+        if self.turbo_mq.cache.cache_info().currsize >= self.cachesize:
+            self.turbo_mq.cache.cache_clear()
+        _chrom = decode(_indiv, self.lenref)
+        chrom_tuple = tuple(map(tuple, _chrom))
+        tmq = self.turbo_mq(chrom_tuple)
+        nc = len(_chrom) / self.lenref
+        _deltaclus = (max(_indiv[1]) - min(_indiv[1])) / self.lenref
+        return [(tmq * self.theta) + (((1-self.theta)/2) * (nc + (1-_deltaclus))), tmq]
 
 
 if __name__ == '__main__':

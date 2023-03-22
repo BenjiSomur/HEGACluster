@@ -374,11 +374,11 @@ def crossover(parents, ref, cp, _cop, int_type):
     return offsp
 
 
-def mutation(chrom, mp, glbls, ref, theta):
+def mutation(chrom, mp, glbls, ref, ftns):
     if rnd.uniform(0, 1) > mp:
         return deepcopy(chrom)
     else:
-        return mutate_indiv(chrom, glbls, ref, theta)
+        return mutate_indiv(chrom, glbls, ref, ftns)
 
 
 # def getnonbins(intpart):
